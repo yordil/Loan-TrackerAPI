@@ -135,9 +135,9 @@ func (u *UserUseCase) Login(c context.Context , user domain.LoginRequest) interf
 	if !exisitingUser.IsVerified { 
 		return domain.ErrorResponse{Message: "User not verified" , Status: 400}
 	}
-
+	fmt.Println(user.Password , "*******************************")
 	// compare password
-	match := u.passwordService.ComparePassword(exisitingUser.Password , user.Password)
+	match := u.passwordService.ComparePassword(user.Password , exisitingUser.Password )
 
 	if !match {
 		return domain.ErrorResponse{Message: "Invalid password" , Status: 400}
@@ -319,6 +319,7 @@ func (u *UserUseCase) Profile(c context.Context, id string) interface{} {
 	}
 
 	user.Password = ""
+	user.RefreshToken = ""
 	return domain.ProfileResponse{Message: "User found" , User: user ,  Status: 200}
 }
 

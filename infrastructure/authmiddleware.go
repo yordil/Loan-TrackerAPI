@@ -35,7 +35,7 @@ func AuthMiddleware() gin.HandlerFunc {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
 
-			return "Secret", nil
+			return []byte("Secret"), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -44,34 +44,24 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
-			// Accessing nested claims correctly
-			if customClaims, ok := claims["claims"].(map[string]interface{}); ok {
-				userID, userIDOk := customClaims["user_id"].(string)
-				role, roleOk := customClaims["role"].(string)
-				email, emailOk := customClaims["email"].(string)
-
-				if userIDOk && roleOk && emailOk {
-					c.Set("user_id", userID)
-					c.Set("role", role)
-					c.Set("email", email)
-
-				} else {
-					c.JSON(401, gin.H{"error": "Invalid JWT claims"})
-					c.Abort()
-					return
-				}
-			} else {
-				c.JSON(401, gin.H{"error": "Invalid JWT claims structure"})
+			userID, userIDOk := claims["id"].(string)
+			if !userIDOk {
+				c.JSON(401, gin.H{"error": "Invalid JWT claims"})
 				c.Abort()
 				return
 			}
+
+			// Store the user ID in the context
+			c.Set("user_id", userID)
 		} else {
 			c.JSON(401, gin.H{"error": "Invalid JWT claims"})
 			c.Abort()
 			return
 		}
 
+		// Proceed to the next handler
 		c.Next()
 	}
 }
