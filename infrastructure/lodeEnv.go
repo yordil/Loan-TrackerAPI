@@ -27,6 +27,7 @@ type Config struct {
 	RedirectURL              string
 	OauthSecret              string
 	GeminiAPIKey             string
+	LoanCollection 			string
 }
 
 func LoadEnv() (*Config, error) {
@@ -54,6 +55,7 @@ func LoadEnv() (*Config, error) {
 	redirectURL := os.Getenv("REDIRECT_URI")
 	oauthSecret := os.Getenv("OAUTH_STATE_STRING")
 	geminiAPIKey := os.Getenv("GEMINI_API_KEY")
+	loancollection := os.Getenv("LOAN_COLLECTION")
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
@@ -98,6 +100,7 @@ func LoadEnv() (*Config, error) {
 		RedirectURL:            redirectURL,
 		OauthSecret:            oauthSecret,
 		GeminiAPIKey:           geminiAPIKey,
+		LoanCollection:			loancollection,
 	}
 
 	return config, nil

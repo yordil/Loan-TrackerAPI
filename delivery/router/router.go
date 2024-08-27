@@ -13,9 +13,11 @@ func Router(server *gin.RouterGroup, config *infrastructure.Config, DB mongo.Dat
 	// setting up new router group for user
 
 	userRouter := server.Group("")
+	loanRouter := server.Group("")
 
 	// call the function from user_router.go
 	UserRouter(*config, DB , userRouter)
+	LoanRouter(*config  , DB , loanRouter)
 
 	// adminRouter := server.Group("")
 

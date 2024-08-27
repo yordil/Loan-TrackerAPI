@@ -147,12 +147,12 @@ func (u *UserUseCase) Login(c context.Context , user domain.LoginRequest) interf
 	stringid := exisitingUser.ID.Hex()
 	refresh := time.Duration(100) * time.Hour
 	access := time.Duration(15) * time.Minute
-	acessToken , err := infrastructure.GenerateToken(stringid , access , "Secret")
+	acessToken , err := infrastructure.GenerateToken(stringid , access , u.config.AccessTokenSecret)
 	if err != nil {
 		return domain.ErrorResponse{Message: "Error generating token" , Status: 500}
 	}
 
-	refreshToken , err := infrastructure.GenerateToken(stringid , refresh , u.config.AccessTokenSecret)
+	refreshToken , err := infrastructure.GenerateToken(stringid , refresh , u.config.RefreshTokenSecret)
 	if err != nil {
 		return domain.ErrorResponse{Message: "Error generating token" , Status: 500}
 	}
@@ -263,13 +263,13 @@ func (u *UserUseCase) ResetPassword(c context.Context, password domain.ResetPass
 
 //  refresh Token endPoint
 
-func (u *UserUseCase) RefreshToken(c context.Context, id string ,  refreshToken domain.RefreshTokenRequest) interface{} {
+func (u *UserUseCase) RefreshToken(c context.Context,  refreshToken domain.RefreshTokenRequest) interface{} {
 	ctx , cancel := context.WithTimeout(c, u.contextTimeout)
 
 	defer cancel()
 	
 	// check if user exists
-	user, err := u.UserRepository.FindUserByID(ctx, id)
+	user, err := u.UserRepository.FindUserByRefreshToken(ctx, refreshToken.RefreshToken)
 	
 	if err != nil { 
 		return domain.ErrorResponse{Message: "User Not found" , Status: 500}
@@ -285,7 +285,7 @@ func (u *UserUseCase) RefreshToken(c context.Context, id string ,  refreshToken 
 	}
 
 	// check if the refresh token is expired
-	check , _ := infrastructure.IsAuthorized(refreshToken.RefreshToken , "Secret")
+	check , _ := infrastructure.IsAuthorized(refreshToken.RefreshToken , u.config.RefreshTokenSecret)
 
 	if !check {
 		return domain.ErrorResponse{Message: "Refresh Token Expired" , Status : 400}
@@ -295,7 +295,7 @@ func (u *UserUseCase) RefreshToken(c context.Context, id string ,  refreshToken 
 	
 	stringid := user.ID.Hex()
 	access := time.Duration(15) * time.Minute
-	acessToken , err := infrastructure.GenerateToken(stringid , access , "Secret")
+	acessToken , err := infrastructure.GenerateToken(stringid , access , u.config.AccessTokenSecret)
 	if err != nil {
 		return domain.ErrorResponse{Message: "Error generating token" , Status: 500}
 	}

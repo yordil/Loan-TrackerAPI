@@ -93,7 +93,7 @@ func (u *UserController) ForgotPassword(c *gin.Context) {
 
 func (u *UserController) RefreshToken(c *gin.Context) {
 
-	id := c.GetString("user_id")
+	
 
 	var refreshToken domain.RefreshTokenRequest
 
@@ -104,7 +104,7 @@ func (u *UserController) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	response := u.UserUseCase.RefreshToken(c, id , refreshToken)
+	response := u.UserUseCase.RefreshToken(c , refreshToken)
 	
 	HandleResponse(c, response)
 
