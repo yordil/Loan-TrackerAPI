@@ -181,3 +181,21 @@ func (u *UserRepository) DeleteUser(c context.Context , id string) (error) {
 	return nil
 
 }
+
+//  find user by refresh Token 
+
+func (u *UserRepository) FindUserByRefreshToken(c context.Context , token string) (domain.User, error) {
+	collection := u.database.Collection(u.collection)
+	var user domain.User
+	filter := bson.M{"refreshtoken": token}
+
+	err := collection.FindOne(c , filter).Decode(&user) 
+
+
+	if err != nil {
+		return domain.User{} , err
+	}
+
+	return user , nil
+
+	}

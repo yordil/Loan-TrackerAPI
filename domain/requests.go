@@ -23,3 +23,11 @@ type LoginRequest struct {
 	Email string `json:"email"`
 	Password string `json:"password"`
 }
+
+type LoanRequest struct { 
+	Amount string `json:"amount"`
+}
+
+type UpdateLoanRequest struct { 
+	Action string `json:"action"`
+}

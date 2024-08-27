@@ -34,6 +34,7 @@ type UserRepository interface {
 	// GetAllUsers() ([]User, error)
 	// DeleteUser(id string) error
 	// VerifyOTP(otp string) (bool, error)
+	FindUserByRefreshToken(c context.Context , token string) (User, error)
 	DeleteUser(c context.Context , id string) (error)
 	FindUserByID(c context.Context , id string) (User, error)
 	FindUserByResetToken(c context.Context , token string) (User, error)
@@ -47,7 +48,7 @@ type UserUseCase interface {
 	VeryfyUser(c context.Context , token string)interface {}
 	ForgotPassword(c context.Context, email ForgotPasswordRequest) interface{}
 	ResetPassword(c context.Context, password ResetPasswordRequest, token string) interface{}
-	RefreshToken(c context.Context, id string , refreshToken RefreshTokenRequest) interface{}
+	RefreshToken(c context.Context , refreshToken RefreshTokenRequest) interface{}
 	Profile(c context.Context, id string) interface{}
 	GetAllUsers(c context.Context , id string) interface{}
 	DeleteUser(c context.Context, id string , adminid string) interface{}

@@ -23,6 +23,12 @@ func HandleResponse(c *gin.Context, response interface{}) {
 		c.JSON(http.StatusOK, res)
 	case domain.RefrshTokenResponse:
 		c.JSON(http.StatusOK, res)
+	case domain.LoanResponse:
+		c.JSON(http.StatusOK, res)
+	case domain.CreateLoanResponse:
+		c.JSON(http.StatusOK, res)
+	case domain.AllLoanResponse:
+		c.JSON(http.StatusOK, res)
 	
 	default:
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: "Internal Server Error", Status: 500})
