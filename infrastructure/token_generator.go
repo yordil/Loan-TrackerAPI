@@ -15,7 +15,7 @@ func GenerateToken(id string , duration time.Duration , secret string ) (string,
 		"exp": time.Now().Add(time.Minute * duration).Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte("Secret"))
+	tokenString, err := token.SignedString([]byte(secret))
 
 	if err != nil {
 		return "", err

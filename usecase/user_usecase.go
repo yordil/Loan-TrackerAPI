@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"loantracker/domain"
 	"loantracker/infrastructure"
 	"strconv"
@@ -15,13 +14,15 @@ type UserUseCase struct {
 	UserRepository domain.UserRepository;
 	contextTimeout time.Duration
 	passwordService domain.PasswordService
+	config *infrastructure.Config
 }
 
-func NewUserUseCase(ur domain.UserRepository, timeout time.Duration , passwordservice domain.PasswordService) domain.UserUseCase {
+func NewUserUseCase(ur domain.UserRepository, timeout time.Duration , passwordservice domain.PasswordService , config *infrastructure.Config) domain.UserUseCase {
 	return &UserUseCase{
 		UserRepository: ur,
 		contextTimeout: timeout,
 		passwordService: passwordservice,
+		config: config,
 	}
 }
 
@@ -94,7 +95,7 @@ func (u *UserUseCase) VeryfyUser(c context.Context , token string) interface{} {
 	defer cancel()
 	user , err := u.UserRepository.FindUserByVerificationToken(ctx , token)
 
-	fmt.Println(user , "************************")
+	
 	if err != nil {
 		return domain.ErrorResponse{Message: "Error finding user" , Status: 500}
 	}
@@ -135,7 +136,7 @@ func (u *UserUseCase) Login(c context.Context , user domain.LoginRequest) interf
 	if !exisitingUser.IsVerified { 
 		return domain.ErrorResponse{Message: "User not verified" , Status: 400}
 	}
-	fmt.Println(user.Password , "*******************************")
+
 	// compare password
 	match := u.passwordService.ComparePassword(user.Password , exisitingUser.Password )
 
@@ -151,7 +152,7 @@ func (u *UserUseCase) Login(c context.Context , user domain.LoginRequest) interf
 		return domain.ErrorResponse{Message: "Error generating token" , Status: 500}
 	}
 
-	refreshToken , err := infrastructure.GenerateToken(stringid , refresh , "Secret")
+	refreshToken , err := infrastructure.GenerateToken(stringid , refresh , u.config.AccessTokenSecret)
 	if err != nil {
 		return domain.ErrorResponse{Message: "Error generating token" , Status: 500}
 	}
